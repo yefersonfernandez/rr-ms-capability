@@ -27,6 +27,11 @@ adapters:
     schema: "${R2DBC_SCHEMA}"
     username: "${R2DBC_USERNAME}"
     password: "${R2DBC_PASSWORD}"
+
+logging:
+  level:
+    org.springframework.r2dbc.core.DefaultDatabaseClient: DEBUG
+
 springdoc:
   swagger-ui:
     path: "/capability/api/doc/swagger-ui.html"
@@ -35,6 +40,7 @@ springdoc:
 routes:
   paths:
     capabilities: "/capability/api/v1/capabilities"
+    capabilitiesList: "/capability/api/v1/capabilities/list"
 adapter:
   restconsumer:
     timeout: 5000

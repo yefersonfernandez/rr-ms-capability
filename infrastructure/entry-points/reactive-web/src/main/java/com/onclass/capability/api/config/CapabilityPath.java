@@ -9,4 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "routes.paths")
 public class CapabilityPath {
     private String capabilities;
+    private String capabilitiesList;
 }
+
+
