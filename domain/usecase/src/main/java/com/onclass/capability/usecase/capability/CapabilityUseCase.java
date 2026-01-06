@@ -7,8 +7,13 @@ import com.onclass.capability.enums.ExceptionMessages;
 import com.onclass.capability.exceptions.CapabilityTechnologiesCountException;
 import com.onclass.capability.port.consumer.TechnologyAssociationConsumerPort;
 import com.onclass.capability.exceptions.CapabilityAlreadyExistsException;
+import com.onclass.capability.model.capability.CapabilityWithTechnologies;
+import com.onclass.capability.usecase.utils.CapabilityUtils;
+import com.onclass.capability.port.consumer.CapabilityTechnologyQueryPort;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 import static com.onclass.capability.constants.CapabilityConstants.MAX_TECHS;
 import static com.onclass.capability.constants.CapabilityConstants.MIN_TECHS;
 import static com.onclass.capability.usecase.utils.CapabilityUtils.hasNoRepeatedTechnologies;
@@ -16,18 +21,19 @@ import static com.onclass.capability.usecase.utils.CapabilityUtils.isValidTechno
 
 @RequiredArgsConstructor
 public class CapabilityUseCase {
-
     private final CapabilityRepositoryPort capabilityRepositoryPort;
     private final TechnologyAssociationConsumerPort technologyAssociationConsumerPort;
+    private final CapabilityTechnologyQueryPort capabilityTechnologyQueryPort;
 
     public Mono<Capability> saveCapability(Capability capability) {
-        var techIds = capability.getTechnologyIds();
+        capability.setTechnologyCount(capability.getTechnologyIds().size());
+
         return Mono.just(capability)
-                .filter(cap -> isValidTechnologiesCount(techIds, MIN_TECHS, MAX_TECHS))
+                .filter(cap -> isValidTechnologiesCount(cap.getTechnologyIds(), MIN_TECHS, MAX_TECHS))
                 .switchIfEmpty(Mono.error(new CapabilityTechnologiesCountException(
                         ExceptionMessages.CAPABILITY_TECHNOLOGIES_COUNT_INVALID.format()
                 )))
-                .filter(cap -> hasNoRepeatedTechnologies(techIds))
+                .filter(cap -> hasNoRepeatedTechnologies(cap.getTechnologyIds()))
                 .switchIfEmpty(Mono.error(new CapabilityTechnologiesCountException(
                         ExceptionMessages.CAPABILITY_TECHNOLOGIES_REPEATED.format()
                 )))
@@ -55,5 +61,13 @@ public class CapabilityUseCase {
                                 )))
                         )
                 );
+    }
+
+    public Flux<CapabilityWithTechnologies> getCapabilitiesWithTechnologies(int page, int size, String sortBy, String order) {
+        return capabilityRepositoryPort.findCapabilitiesPagedAndSorted(page, size, sortBy, order)
+            .flatMapSequential(capability -> capabilityTechnologyQueryPort.getTechnologiesByCapabilityId(capability.getId())
+                .collectList()
+                .map(techs -> CapabilityUtils.buildCapabilityWithTechnologies(capability, techs))
+            );
     }
 }

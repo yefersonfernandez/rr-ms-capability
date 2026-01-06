@@ -1,5 +1,8 @@
 package com.onclass.capability.usecase.utils;
 
+import com.onclass.capability.model.capability.Capability;
+import com.onclass.capability.model.capability.CapabilityWithTechnologies;
+import com.onclass.capability.model.technology.TechnologySummary;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
@@ -14,5 +17,13 @@ public class CapabilityUtils {
     public static boolean hasNoRepeatedTechnologies(List<Long> techIds) {
         return techIds != null && techIds.stream().distinct().count() == techIds.size();
     }
-}
 
+    public static CapabilityWithTechnologies buildCapabilityWithTechnologies(Capability capability, List<TechnologySummary> technologies) {
+        return CapabilityWithTechnologies.builder()
+                .id(capability.getId())
+                .name(capability.getName())
+                .description(capability.getDescription())
+                .technologies(technologies)
+                .build();
+    }
+}
