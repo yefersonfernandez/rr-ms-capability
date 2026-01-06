@@ -19,4 +19,6 @@ public class CapabilityEntity {
     private Long id;
     private String name;
     private String description;
+    @Column("technology_count")
+    private Integer technologyCount;
 }
