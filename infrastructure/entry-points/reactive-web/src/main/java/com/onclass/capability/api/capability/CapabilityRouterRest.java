@@ -18,6 +18,7 @@ public class CapabilityRouterRest {
     public RouterFunction<ServerResponse> routerFunction(CapabilityHandler handler) {
         return route()
                 .POST(capabilityPath.getCapabilities(), handler::listenSaveCapability, CapabilityOpenApi::saveCapability)
+                .GET(capabilityPath.getCapabilitiesList(), handler::listenListCapabilities, CapabilityOpenApi::listCapabilities)
                 .build();
     }
 }

@@ -8,8 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @OpenAPIDefinition(
         info = @Info(
                 title = "Capability Microservice",
-                description = "xxx."
+                description = "Manages capabilities and their association with bootcamps."
         )
 )
-public class SwaggerConfig {
-}
+public class SwaggerConfig {}

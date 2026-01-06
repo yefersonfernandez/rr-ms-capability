@@ -10,6 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.reactivecommons.utils.ObjectMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -27,6 +30,13 @@ class CapabilityRepositoryAdapterTest {
 
     private Capability capability;
     private CapabilityEntity capabilityEntity;
+
+    private static final int PAGE = 0;
+    private static final int SIZE = 2;
+    private static final String SORT_BY = "name";
+    private static final String ORDER_ASC = "asc";
+    private static final String NAME_A = "A";
+    private static final String NAME_B = "B";
 
     @BeforeEach
     void setUp() {
@@ -77,6 +87,23 @@ class CapabilityRepositoryAdapterTest {
         StepVerifier.create(adapter.findCapabilityByName(name))
                 .verifyComplete();
     }
+
+    @Test
+    @DisplayName("findCapabilitiesPagedAndSorted should return paginated and ordered capabilities")
+    void findCapabilitiesPagedAndSorted_shouldReturnPaginatedAndOrdered() {
+        var entity1 = new CapabilityEntity(); entity1.setId(1L); entity1.setName(NAME_A);
+        var entity2 = new CapabilityEntity(); entity2.setId(2L); entity2.setName(NAME_B);
+        var cap1 = new Capability(); cap1.setId(1L); cap1.setName(NAME_A);
+        var cap2 = new Capability(); cap2.setId(2L); cap2.setName(NAME_B);
+
+        when(repository.findAllBy(PageRequest.of(PAGE, SIZE,Sort.by(Sort.Direction.ASC, SORT_BY))))
+            .thenReturn(Flux.just(entity1, entity2));
+        when(mapper.map(entity1, Capability.class)).thenReturn(cap1);
+        when(mapper.map(entity2, Capability.class)).thenReturn(cap2);
+
+        StepVerifier.create(adapter.findCapabilitiesPagedAndSorted(PAGE, SIZE, SORT_BY, ORDER_ASC))
+            .expectNext(cap1)
+            .expectNext(cap2)
+            .verifyComplete();
+    }
 }
-
-

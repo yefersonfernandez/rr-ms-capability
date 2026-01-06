@@ -1,4 +1,4 @@
-package com.onclass.capability.consumer;
+package com.onclass.capability.consumer.rest;
 
 import com.onclass.capability.exceptions.CapabilityTechnologiesCountException;
 import com.onclass.capability.exceptions.RepeatedTechnologiesException;
