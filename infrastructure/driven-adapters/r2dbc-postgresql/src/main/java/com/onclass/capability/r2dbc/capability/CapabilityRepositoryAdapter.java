@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Repository
 @Slf4j
 public class CapabilityRepositoryAdapter extends ReactiveAdapterOperations<
@@ -48,5 +50,10 @@ public class CapabilityRepositoryAdapter extends ReactiveAdapterOperations<
         return repository.findAllBy(pageRequest)
                 .map(super::toEntity)
                 .doOnNext(cap -> log.info("[DB RESULT] capability_id={}, name={}, technology_count={}", cap.getId(), cap.getName(), cap.getTechnologyCount()));
+    }
+
+    @Override
+    public Mono<Long> countByIds(List<Long> capabilityIds) {
+        return repository.countByIdIn(capabilityIds);
     }
 }
