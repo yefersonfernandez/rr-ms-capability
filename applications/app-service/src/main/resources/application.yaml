@@ -41,6 +41,7 @@ routes:
   paths:
     capabilities: "/capability/api/v1/capabilities"
     capabilitiesList: "/capability/api/v1/capabilities/list"
+    associate-capabilities: "/capability/api/v1/capabilities/bootcamp-associations"
 adapter:
   restconsumer:
     timeout: 5000

@@ -18,6 +18,14 @@ public class CapabilityUtils {
         return techIds != null && techIds.stream().distinct().count() == techIds.size();
     }
 
+    public static boolean isValidCapabilitiesCount(List<Long> capsIds, int min, int max) {
+        return capsIds != null && capsIds.size() >= min && capsIds.size() <= max;
+    }
+
+    public static boolean hasNoRepeatedCapabilities(List<Long> capsIds) {
+        return capsIds != null && capsIds.stream().distinct().count() == capsIds.size();
+    }
+
     public static CapabilityWithTechnologies buildCapabilityWithTechnologies(Capability capability, List<TechnologySummary> technologies) {
         return CapabilityWithTechnologies.builder()
                 .id(capability.getId())

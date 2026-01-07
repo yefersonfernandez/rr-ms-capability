@@ -6,5 +6,7 @@ import lombok.experimental.UtilityClass;
 public final class CapabilityConstants {
     public static final int MIN_TECHS = 3;
     public static final int MAX_TECHS = 20;
+    public static final int MIN_CAPS = 1;
+    public static final int MAX_CAPS = 4;
 }
 
