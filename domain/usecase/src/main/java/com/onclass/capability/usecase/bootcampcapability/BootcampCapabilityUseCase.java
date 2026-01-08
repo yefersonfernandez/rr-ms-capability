@@ -6,14 +6,14 @@ import com.onclass.capability.exceptions.RepeatedCapabilitiesException;
 import com.onclass.capability.model.bootcampcapability.gateways.BootcampCapabilityRepositoryPort;
 import com.onclass.capability.model.capability.Capability;
 import com.onclass.capability.model.capability.gateways.CapabilityRepositoryPort;
+import com.onclass.capability.port.consumer.TechnologyConsumerPort;
 import com.onclass.capability.usecase.utils.CapabilityUtils;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import java.util.List;
 
-import static com.onclass.capability.constants.CapabilityConstants.MAX_CAPS;
-import static com.onclass.capability.constants.CapabilityConstants.MIN_CAPS;
+import static com.onclass.capability.constants.CapabilityConstants.*;
 import static com.onclass.capability.usecase.utils.CapabilityUtils.isValidCapabilitiesCount;
 
 
@@ -21,6 +21,7 @@ import static com.onclass.capability.usecase.utils.CapabilityUtils.isValidCapabi
 public class BootcampCapabilityUseCase {
     private final BootcampCapabilityRepositoryPort bootcampCapabilityRepositoryPort;
     private final CapabilityRepositoryPort capabilityRepositoryPort;
+    private final TechnologyConsumerPort technologyConsumerPort;
 
     public Mono<Void> associateCapabilities(Long bootcampId, List<Long> capabilityIds) {
         return Mono.just(capabilityIds)
@@ -39,5 +40,37 @@ public class BootcampCapabilityUseCase {
     public Flux<Capability> getCapabilitiesByBootcampId(Long bootcampId) {
         return bootcampCapabilityRepositoryPort.findCapabilityIdsByBootcampId(bootcampId)
                 .flatMap(capabilityRepositoryPort::findCapabilityById);
+    }
+
+    public Mono<Void> deleteAssociatedDataByBootcampId(Long bootcampId) {
+        return bootcampCapabilityRepositoryPort.findCapabilityIdsByBootcampId(bootcampId)
+                .collectList()
+                .filter(associatedIds -> !associatedIds.isEmpty())
+                .flatMapMany(Flux::fromIterable)
+                .flatMap(this::identifyOrphanCapability)
+                .collectList()
+                .flatMap(this::executeCascadingDelete)
+                .then(bootcampCapabilityRepositoryPort.deleteAssociationsByBootcampId(bootcampId));
+    }
+
+    private Mono<Long> identifyOrphanCapability(Long capabilityId) {
+        return bootcampCapabilityRepositoryPort.countBootcampsByCapability(capabilityId)
+                .filter(usageCount -> usageCount <= SOLE_BOOTCAMP_ASSOCIATION)
+                .map(unused -> capabilityId);
+    }
+
+    private Mono<Void> executeCascadingDelete(List<Long> orphanCapabilityIds) {
+        return Mono.just(orphanCapabilityIds)
+                .filter(ids -> !ids.isEmpty())
+                .flatMap(ids -> deleteTechnologiesInCascade(ids)
+                        .then(deleteOrphanCapacities(ids)));
+    }
+
+    private Mono<Void> deleteTechnologiesInCascade(List<Long> orphanCapabilityIds) {
+        return technologyConsumerPort.deleteTechnologiesByCapabilityIds(orphanCapabilityIds);
+    }
+
+    private Mono<Void> deleteOrphanCapacities(List<Long> orphanCapabilityIds) {
+        return capabilityRepositoryPort.deleteCapabilitiesByIds(orphanCapabilityIds);
     }
 }
