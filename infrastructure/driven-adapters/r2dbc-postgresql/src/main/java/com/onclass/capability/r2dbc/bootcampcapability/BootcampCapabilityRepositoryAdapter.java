@@ -48,4 +48,17 @@ public class BootcampCapabilityRepositoryAdapter extends ReactiveAdapterOperatio
                 .map(BootcampCapabilityEntity::getCapabilityId)
                 .doOnNext(id -> log.info("[DB] findCapabilityIdsByBootcampId({}): capabilityId={}", bootcampId, id));
     }
+
+    @Override
+    public Mono<Long> countBootcampsByCapability(Long capabilityId) {
+        return repository.countByCapabilityId(capabilityId)
+                .doOnNext(count -> log.info("[DB] countBootcampsForCapability({}): count={}", capabilityId, count));
+    }
+
+    @Override
+    public Mono<Void> deleteAssociationsByBootcampId(Long bootcampId) {
+        return repository.deleteAllByBootcampId(bootcampId)
+                .doOnSuccess(unused -> log.info("[DB] deleteAssociationsByBootcampId para bootcampId={}", bootcampId))
+                .as(transactionalOperator::transactional);
+    }
 }

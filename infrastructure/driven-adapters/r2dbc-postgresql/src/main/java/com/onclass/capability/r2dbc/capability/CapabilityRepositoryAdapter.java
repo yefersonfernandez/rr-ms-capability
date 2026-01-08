@@ -65,4 +65,9 @@ public class CapabilityRepositoryAdapter extends ReactiveAdapterOperations<
                 .map(super::toEntity)
                 .doOnNext(cap -> log.info("[DB RESULT] findCapabilityById({}): id={}, name={}, technology_count={}", capabilityId, cap.getId(), cap.getName(), cap.getTechnologyCount()));
     }
+
+    @Override
+    public Mono<Void> deleteCapabilitiesByIds(List<Long> capabilityIds) {
+        return repository.deleteAllById(capabilityIds);
+    }
 }
