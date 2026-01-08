@@ -7,14 +7,14 @@ import com.onclass.capability.port.consumer.CapabilityTechnologyQueryPort;
 import com.onclass.capability.enums.ExceptionMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class CapabilityTechnologyQueryRestConsumer implements CapabilityTechnologyQueryPort {
     private static final String GET_TECHNOLOGIES_URL = "/technology/api/v1/capabilities/{capabilityId}/technologies";

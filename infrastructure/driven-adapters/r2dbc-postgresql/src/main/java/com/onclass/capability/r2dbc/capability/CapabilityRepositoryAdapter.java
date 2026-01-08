@@ -45,9 +45,11 @@ public class CapabilityRepositoryAdapter extends ReactiveAdapterOperations<
 
     @Override
     public Flux<Capability> findCapabilitiesPagedAndSorted(int page, int size, String sortBy, String order) {
-        Sort sort = Sort.by(order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
-        PageRequest pageRequest = PageRequest.of(page, size, sort);
-        return repository.findAllBy(pageRequest)
+        return Mono.just(order)
+                .map(ord -> ord.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC)
+                .map(direction -> Sort.by(direction, sortBy))
+                .map(sort -> PageRequest.of(page, size, sort))
+                .flatMapMany(pageRequest -> repository.findAllBy(pageRequest))
                 .map(super::toEntity)
                 .doOnNext(cap -> log.info("[DB RESULT] capability_id={}, name={}, technology_count={}", cap.getId(), cap.getName(), cap.getTechnologyCount()));
     }
@@ -55,5 +57,12 @@ public class CapabilityRepositoryAdapter extends ReactiveAdapterOperations<
     @Override
     public Mono<Long> countByIds(List<Long> capabilityIds) {
         return repository.countByIdIn(capabilityIds);
+    }
+
+    @Override
+    public Mono<Capability> findCapabilityById(Long capabilityId) {
+        return repository.findById(capabilityId)
+                .map(super::toEntity)
+                .doOnNext(cap -> log.info("[DB RESULT] findCapabilityById({}): id={}, name={}, technology_count={}", capabilityId, cap.getId(), cap.getName(), cap.getTechnologyCount()));
     }
 }

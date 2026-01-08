@@ -2,15 +2,10 @@ package com.onclass.capability.r2dbc.bootcampcapability;
 
 import com.onclass.capability.model.bootcampcapability.BootcampCapability;
 import com.onclass.capability.model.bootcampcapability.gateways.BootcampCapabilityRepositoryPort;
-import com.onclass.capability.model.capability.Capability;
-import com.onclass.capability.model.capability.gateways.CapabilityRepositoryPort;
 import com.onclass.capability.r2dbc.entity.BootcampCapabilityEntity;
-import com.onclass.capability.r2dbc.entity.CapabilityEntity;
 import com.onclass.capability.r2dbc.helper.ReactiveAdapterOperations;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivecommons.utils.ObjectMapper;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
@@ -45,5 +40,12 @@ public class BootcampCapabilityRepositoryAdapter extends ReactiveAdapterOperatio
                 .flatMapMany(repository::saveAll)
                 .then()
                 .as(transactionalOperator::transactional);
+    }
+
+    @Override
+    public Flux<Long> findCapabilityIdsByBootcampId(Long bootcampId) {
+        return repository.findAllByBootcampId(bootcampId)
+                .map(BootcampCapabilityEntity::getCapabilityId)
+                .doOnNext(id -> log.info("[DB] findCapabilityIdsByBootcampId({}): capabilityId={}", bootcampId, id));
     }
 }
