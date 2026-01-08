@@ -19,6 +19,7 @@ public class BootcampCapabilityRouterRest {
         return route()
                 .POST(bootcampCapabilityPath.getAssociateCapabilities(), handler::listenAssociateCapabilities, BootcampCapabilityOpenApi::associateCapabilities)
                 .GET(bootcampCapabilityPath.getCapabilitiesByBootcampId(), handler::listenGetCapabilitiesByBootcampId, BootcampCapabilityOpenApi::getCapabilitiesByBootcampId)
+                .DELETE(bootcampCapabilityPath.getDeleteBootcampCascade(), handler::listenDeleteAssociatedDataByBootcampId, BootcampCapabilityOpenApi::deleteAssociatedDataByBootcampId)
                 .build();
     }
 }

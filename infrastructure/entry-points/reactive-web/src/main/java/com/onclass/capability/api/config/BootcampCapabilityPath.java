@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class BootcampCapabilityPath {
     private String associateCapabilities;
     private String getCapabilitiesByBootcampId;
+    private String deleteBootcampCascade;
 
     public String getCapabilitiesByBootcampId() {
         return getCapabilitiesByBootcampId;
