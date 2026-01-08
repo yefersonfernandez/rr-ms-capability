@@ -4,9 +4,11 @@ import com.onclass.capability.exceptions.InvalidCountException;
 import com.onclass.capability.exceptions.NotFoundException;
 import com.onclass.capability.exceptions.RepeatedCapabilitiesException;
 import com.onclass.capability.model.bootcampcapability.gateways.BootcampCapabilityRepositoryPort;
+import com.onclass.capability.model.capability.Capability;
 import com.onclass.capability.model.capability.gateways.CapabilityRepositoryPort;
 import com.onclass.capability.usecase.utils.CapabilityUtils;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import java.util.List;
 
@@ -34,4 +36,8 @@ public class BootcampCapabilityUseCase {
                 .then().log();
     }
 
+    public Flux<Capability> getCapabilitiesByBootcampId(Long bootcampId) {
+        return bootcampCapabilityRepositoryPort.findCapabilityIdsByBootcampId(bootcampId)
+                .flatMap(capabilityRepositoryPort::findCapabilityById);
+    }
 }
