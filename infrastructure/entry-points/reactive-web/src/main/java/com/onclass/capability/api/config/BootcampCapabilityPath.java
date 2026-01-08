@@ -9,4 +9,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "routes.paths")
 public class BootcampCapabilityPath {
     private String associateCapabilities;
+    private String getCapabilitiesByBootcampId;
+
+    public String getCapabilitiesByBootcampId() {
+        return getCapabilitiesByBootcampId;
+    }
 }

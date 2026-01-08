@@ -12,4 +12,5 @@ public interface CapabilityRepositoryPort {
     Mono<Capability> findCapabilityByName(String name);
     Flux<Capability> findCapabilitiesPagedAndSorted(int page, int size, String sortBy, String order);
     Mono<Long> countByIds(List<Long> capabilityIds);
+    Mono<Capability> findCapabilityById(Long capabilityId);
 }

@@ -1,5 +1,6 @@
 package com.onclass.capability.api.bootcampcapability;
 import com.onclass.capability.api.dto.request.BootcampCapabilityRequestDto;
+import com.onclass.capability.api.mapper.CapabilityMapper;
 import com.onclass.capability.enums.ExceptionStatusCode;
 import com.onclass.capability.usecase.bootcampcapability.BootcampCapabilityUseCase;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import static com.onclass.capability.api.utils.HandlersResponseUtil.buildBodySuc
 @Slf4j
 public class BootcampCapabilityHandler {
     private final BootcampCapabilityUseCase bootcampCapabilityUseCase;
+    private final CapabilityMapper capabilityMapper;
 
     public Mono<ServerResponse> listenAssociateCapabilities(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(BootcampCapabilityRequestDto.class)
@@ -30,4 +32,15 @@ public class BootcampCapabilityHandler {
                         .bodyValue(buildBodySuccessResponse(ExceptionStatusCode.CREATED.status(), null))
                 );
     }
+
+    public Mono<ServerResponse> listenGetCapabilitiesByBootcampId(ServerRequest request) {
+        Long bootcampId = Long.valueOf(request.pathVariable("bootcampId"));
+        return bootcampCapabilityUseCase.getCapabilitiesByBootcampId(bootcampId)
+                .map(capabilityMapper::toCapabilitySummaryResponseDto)
+                .collectList()
+                .flatMap(list -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(buildBodySuccessResponse(ExceptionStatusCode.OK.status(), list)));
+    }
+
 }
