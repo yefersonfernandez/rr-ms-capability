@@ -12,6 +12,6 @@ public record CapabilityWithTechnologiesResponseDto(
         @Schema(description = "Description of the capability", example = "A reactive framework for Spring applications")
         String description,
         @Schema(description = "List of associated technologies (id and name only)")
-        List<TechnologySummaryDto> technologies
+        List<TechnologySummaryResponseDto> technologies
 ) {}
 

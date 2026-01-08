@@ -15,9 +15,10 @@ public class BootcampCapabilityRouterRest {
     private final BootcampCapabilityPath bootcampCapabilityPath;
 
     @Bean
-    public RouterFunction<ServerResponse> routerFunctionCapabilityTechnology(BootcampCapabilityHandler handler) {
+    public RouterFunction<ServerResponse> routerFunctionBootcampCapability(BootcampCapabilityHandler handler) {
         return route()
                 .POST(bootcampCapabilityPath.getAssociateCapabilities(), handler::listenAssociateCapabilities, BootcampCapabilityOpenApi::associateCapabilities)
+                .GET(bootcampCapabilityPath.getCapabilitiesByBootcampId(), handler::listenGetCapabilitiesByBootcampId, BootcampCapabilityOpenApi::getCapabilitiesByBootcampId)
                 .build();
     }
 }
