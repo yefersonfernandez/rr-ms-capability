@@ -8,7 +8,7 @@ import com.onclass.capability.model.capability.Capability;
 import com.onclass.capability.model.capability.CapabilityWithTechnologies;
 import com.onclass.capability.model.technology.TechnologySummary;
 import com.onclass.capability.model.capability.gateways.CapabilityRepositoryPort;
-import com.onclass.capability.port.consumer.TechnologyAssociationConsumerPort;
+import com.onclass.capability.port.consumer.TechnologyConsumerPort;
 import com.onclass.capability.port.consumer.CapabilityTechnologyQueryPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +31,7 @@ class CapabilityUseCaseTest {
     private CapabilityRepositoryPort capabilityRepositoryPort;
 
     @Mock
-    private TechnologyAssociationConsumerPort technologyAssociationConsumerPort;
+    private TechnologyConsumerPort technologyConsumerPort;
 
     @Mock
     private CapabilityTechnologyQueryPort capabilityTechnologyQueryPort;
@@ -103,14 +103,14 @@ class CapabilityUseCaseTest {
 
         when(capabilityRepositoryPort.findCapabilityByName(any())).thenReturn(Mono.empty());
         when(capabilityRepositoryPort.saveCapability(any())).thenReturn(Mono.just(capability));
-        when(technologyAssociationConsumerPort.associateTechnologies(any(), any())).thenReturn(Mono.empty());
+        when(technologyConsumerPort.associateTechnologies(any(), any())).thenReturn(Mono.empty());
 
         StepVerifier.create(capabilityUseCase.saveCapability(capability))
                 .expectNext(capability)
                 .verifyComplete();
 
         verify(capabilityRepositoryPort).saveCapability(capability);
-        verify(technologyAssociationConsumerPort).associateTechnologies(capability.getId(), capability.getTechnologyIds());
+        verify(technologyConsumerPort).associateTechnologies(capability.getId(), capability.getTechnologyIds());
     }
 
     @Test
@@ -121,7 +121,7 @@ class CapabilityUseCaseTest {
 
         when(capabilityRepositoryPort.findCapabilityByName(any())).thenReturn(Mono.empty());
         when(capabilityRepositoryPort.saveCapability(any())).thenReturn(Mono.just(capability));
-        when(technologyAssociationConsumerPort.associateTechnologies(any(), any())).thenReturn(Mono.error(new RuntimeException(ASSOCIATION_ERROR_MESSAGE)));
+        when(technologyConsumerPort.associateTechnologies(any(), any())).thenReturn(Mono.error(new RuntimeException(ASSOCIATION_ERROR_MESSAGE)));
         when(capabilityRepositoryPort.deleteCapability(any())).thenReturn(Mono.empty());
 
         StepVerifier.create(capabilityUseCase.saveCapability(capability))

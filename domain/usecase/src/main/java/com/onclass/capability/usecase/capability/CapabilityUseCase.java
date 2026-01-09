@@ -5,11 +5,10 @@ import com.onclass.capability.model.capability.Capability;
 import com.onclass.capability.model.capability.gateways.CapabilityRepositoryPort;
 import com.onclass.capability.enums.ExceptionMessages;
 import com.onclass.capability.exceptions.CapabilityTechnologiesCountException;
-import com.onclass.capability.port.consumer.TechnologyAssociationConsumerPort;
+import com.onclass.capability.port.consumer.TechnologyConsumerPort;
 import com.onclass.capability.exceptions.CapabilityAlreadyExistsException;
 import com.onclass.capability.model.capability.CapabilityWithTechnologies;
 import com.onclass.capability.usecase.utils.CapabilityUtils;
-import com.onclass.capability.port.consumer.CapabilityTechnologyQueryPort;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,8 +21,7 @@ import static com.onclass.capability.usecase.utils.CapabilityUtils.isValidTechno
 @RequiredArgsConstructor
 public class CapabilityUseCase {
     private final CapabilityRepositoryPort capabilityRepositoryPort;
-    private final TechnologyAssociationConsumerPort technologyAssociationConsumerPort;
-    private final CapabilityTechnologyQueryPort capabilityTechnologyQueryPort;
+    private final TechnologyConsumerPort technologyConsumerPort;
 
     public Mono<Capability> saveCapability(Capability capability) {
         capability.setTechnologyCount(capability.getTechnologyIds().size());
@@ -52,7 +50,7 @@ public class CapabilityUseCase {
     private Mono<Capability> saveAndAssociateTechnologies(Capability capability) {
         var techIds = capability.getTechnologyIds();
         return capabilityRepositoryPort.saveCapability(capability)
-                .flatMap(savedCap -> technologyAssociationConsumerPort
+                .flatMap(savedCap -> technologyConsumerPort
                         .associateTechnologies(savedCap.getId(), techIds)
                         .thenReturn(savedCap)
                         .onErrorResume(e -> capabilityRepositoryPort.deleteCapability(savedCap.getId())
@@ -65,7 +63,7 @@ public class CapabilityUseCase {
 
     public Flux<CapabilityWithTechnologies> getCapabilitiesWithTechnologies(int page, int size, String sortBy, String order) {
         return capabilityRepositoryPort.findCapabilitiesPagedAndSorted(page, size, sortBy, order)
-            .flatMapSequential(capability -> capabilityTechnologyQueryPort.getTechnologiesByCapabilityId(capability.getId())
+            .flatMapSequential(capability -> technologyConsumerPort.getTechnologiesByCapabilityId(capability.getId())
                 .collectList()
                 .map(techs -> CapabilityUtils.buildCapabilityWithTechnologies(capability, techs))
             );

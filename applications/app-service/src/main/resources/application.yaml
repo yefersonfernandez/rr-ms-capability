@@ -43,6 +43,7 @@ routes:
     capabilitiesList: "/capability/api/v1/capabilities/list"
     associate-capabilities: "/capability/api/v1/capabilities/bootcamp-associations"
     get-capabilities-by-bootcamp-id: "/capability/api/v1/botcamps/{bootcampId}/capabilities"
+    delete-bootcamp-cascade: "/capability/api/v1/bootcamps/{bootcampId}"
 
 adapter:
   restconsumer:
