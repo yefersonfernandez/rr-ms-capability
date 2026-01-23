@@ -24,8 +24,6 @@ public class CapabilityUseCase {
     private final TechnologyConsumerPort technologyConsumerPort;
 
     public Mono<Capability> saveCapability(Capability capability) {
-        capability.setTechnologyCount(capability.getTechnologyIds().size());
-
         return Mono.just(capability)
                 .filter(cap -> isValidTechnologiesCount(cap.getTechnologyIds(), MIN_TECHS, MAX_TECHS))
                 .switchIfEmpty(Mono.error(new CapabilityTechnologiesCountException(
@@ -35,6 +33,7 @@ public class CapabilityUseCase {
                 .switchIfEmpty(Mono.error(new CapabilityTechnologiesCountException(
                         ExceptionMessages.CAPABILITY_TECHNOLOGIES_REPEATED.format()
                 )))
+                .map(CapabilityUtils::enrichWithTechnologyCount)
                 .flatMap(this::validateUniqueName)
                 .flatMap(this::saveAndAssociateTechnologies);
     }

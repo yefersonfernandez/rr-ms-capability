@@ -16,6 +16,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.List;
+
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -105,5 +107,50 @@ class CapabilityRepositoryAdapterTest {
             .expectNext(cap1)
             .expectNext(cap2)
             .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("findCapabilityById should return capability when found")
+    void findCapabilityById_shouldReturnCapability() {
+        Long id = 1L;
+        capabilityEntity.setId(id);
+        capability.setId(id);
+        when(repository.findById(id)).thenReturn(Mono.just(capabilityEntity));
+        when(mapper.map(capabilityEntity, Capability.class)).thenReturn(capability);
+
+        StepVerifier.create(adapter.findCapabilityById(id))
+                .expectNext(capability)
+                .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("findCapabilityById should complete empty when not found")
+    void findCapabilityById_shouldReturnEmptyWhenNotFound() {
+        Long id = 1L;
+        when(repository.findById(id)).thenReturn(Mono.empty());
+
+        StepVerifier.create(adapter.findCapabilityById(id))
+                .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("deleteCapabilitiesByIds should delete all by ids and complete")
+    void deleteCapabilitiesByIds_shouldDeleteAllByIds() {
+        var ids = List.of(1L, 2L, 3L);
+        when(repository.deleteAllById(ids)).thenReturn(Mono.empty());
+
+        StepVerifier.create(adapter.deleteCapabilitiesByIds(ids))
+                .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("countByIds should return count of matching ids")
+    void countByIds_shouldReturnCount() {
+        var ids = List.of(1L, 2L, 3L);
+        when(repository.countByIdIn(ids)).thenReturn(Mono.just(2L));
+
+        StepVerifier.create(adapter.countByIds(ids))
+                .expectNext(2L)
+                .verifyComplete();
     }
 }

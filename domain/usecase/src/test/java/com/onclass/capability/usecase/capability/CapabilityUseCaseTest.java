@@ -9,7 +9,6 @@ import com.onclass.capability.model.capability.CapabilityWithTechnologies;
 import com.onclass.capability.model.technology.TechnologySummary;
 import com.onclass.capability.model.capability.gateways.CapabilityRepositoryPort;
 import com.onclass.capability.port.consumer.TechnologyConsumerPort;
-import com.onclass.capability.port.consumer.CapabilityTechnologyQueryPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,9 +31,6 @@ class CapabilityUseCaseTest {
 
     @Mock
     private TechnologyConsumerPort technologyConsumerPort;
-
-    @Mock
-    private CapabilityTechnologyQueryPort capabilityTechnologyQueryPort;
 
     @InjectMocks
     private CapabilityUseCase capabilityUseCase;
@@ -147,9 +143,9 @@ class CapabilityUseCaseTest {
 
         when(capabilityRepositoryPort.findCapabilitiesPagedAndSorted(PAGE, SIZE, SORT_BY, ORDER_ASC))
             .thenReturn(Flux.just(cap1, cap2));
-        when(capabilityTechnologyQueryPort.getTechnologiesByCapabilityId(CAP1_ID))
+        when(technologyConsumerPort.getTechnologiesByCapabilityId(CAP1_ID))
             .thenReturn(Flux.just(tech1, tech2));
-        when(capabilityTechnologyQueryPort.getTechnologiesByCapabilityId(CAP2_ID))
+        when(technologyConsumerPort.getTechnologiesByCapabilityId(CAP2_ID))
             .thenReturn(Flux.just(tech2));
 
         StepVerifier.create(capabilityUseCase.getCapabilitiesWithTechnologies(PAGE, SIZE, SORT_BY, ORDER_ASC))

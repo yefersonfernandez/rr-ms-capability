@@ -38,8 +38,7 @@ public class BootcampCapabilityRepositoryAdapter extends ReactiveAdapterOperatio
                         .build())
                 .collectList()
                 .flatMapMany(repository::saveAll)
-                .then()
-                .as(transactionalOperator::transactional);
+                .then();
     }
 
     @Override

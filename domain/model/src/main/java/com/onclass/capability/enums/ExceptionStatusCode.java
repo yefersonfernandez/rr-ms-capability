@@ -6,7 +6,6 @@ public enum ExceptionStatusCode {
     NOT_FOUND("404-NF"),
     CREATED("201-CR"),
     INTERNAL_SERVER_ERROR("500-ISE"),
-    FORBIDDEN("403-FB"),
     OK("200-OK"),
     CONFLICT("409-CF");
 

@@ -33,8 +33,7 @@ public class BootcampCapabilityUseCase {
                         .filter(count -> count == ids.size())
                         .switchIfEmpty(Mono.error(new NotFoundException(ExceptionMessages.CAPABILITY_NOT_FOUND.format())))
                         .thenReturn(ids))
-                .flatMap(ids -> bootcampCapabilityRepositoryPort.saveAll(bootcampId, ids))
-                .then().log();
+                .flatMap(ids -> bootcampCapabilityRepositoryPort.saveAll(bootcampId, ids));
     }
 
     public Flux<Capability> getCapabilitiesByBootcampId(Long bootcampId) {

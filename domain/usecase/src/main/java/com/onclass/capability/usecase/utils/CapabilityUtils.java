@@ -34,4 +34,10 @@ public class CapabilityUtils {
                 .technologies(technologies)
                 .build();
     }
+
+    public static Capability enrichWithTechnologyCount(Capability capability) {
+        return capability.toBuilder()
+                .technologyCount(capability.getTechnologyIds().size())
+                .build();
+    }
 }
